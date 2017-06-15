@@ -8,7 +8,7 @@
 	</head>
 	<body>
 		<tq-grid data-size="3"
-			data-value="[5, 2, 6, 0, 1, 8, 7, 3, 4]">
+			data-value="[1, 2, 3, 0, 4, 5, 7, 8, 6]">
 		</tq-grid>
 
 		<!--
@@ -71,6 +71,10 @@
 						emptyItem.dataset.value = target.dataset.value;
 						target.dataset.value = 0;
 					}
+
+					if (this.isDone()) {
+						alert('You win !');
+					}
 				}
 
 				getEmptyItem () {
@@ -101,6 +105,20 @@
 
 				isAdjacent (a, b) {
 					return Math.abs(a - b) === 1;
+				}
+
+				isDone () {
+					var itemList = this.shadowRoot.querySelectorAll('tq-item'),
+						response = true;
+
+					for (let i = 0, length = itemList.length; i < length - 2; i++) {
+						if (itemList[i].dataset.value > itemList[i + 1].dataset.value) {
+							response = false;
+							break;
+						}
+					}
+
+					return response;
 				}
 			};
 

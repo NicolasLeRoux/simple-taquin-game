@@ -1,0 +1,23 @@
+{
+  "name": "simple-taquin-game",
+  "version": "1.0.0",
+  "description": "A simple taquin game with web component.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NicolasLeRoux/simple-taquin-game.git"
+  },
+  "keywords": [
+    "taquin",
+    "game",
+    "web component"
+  ],
+  "author": "Nicolas Le Roux <mr.leroux.nicolas@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NicolasLeRoux/simple-taquin-game/issues"
+  },
+  "homepage": "https://github.com/NicolasLeRoux/simple-taquin-game#readme"
+}

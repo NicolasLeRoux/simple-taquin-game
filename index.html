@@ -1,0 +1,172 @@
+<!doctype html>
+<html class="no-js" lang="fr">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+
+		<title>Simple taquin Game with web component</title>
+	</head>
+	<body>
+		<tq-grid data-size="3"
+			data-value="[5, 2, 6, 0, 1, 8, 7, 3, 4]">
+		</tq-grid>
+
+		<!--
+		Template associé au web component tq-grid
+		-->
+		<template id="tq-grid-tmpl">
+			<style>
+				:host {
+					display: flex;
+					flex-wrap: wrap;
+				}
+			</style>
+		</template>
+
+		<!--
+		Définition de l'élément grille du taquin.
+		-->
+		<script>
+			class TaquinGrid extends HTMLElement {
+				constructor () {
+					super();
+
+					var shadow = this.attachShadow({
+							mode: 'open'
+						}),
+						// Extraction et parsing du tableau d'élément à afficher
+						grid = JSON.parse(this.getAttribute('data-value')),
+						// Extraction de la taille de la grille de jeux
+						size = +this.getAttribute('data-size'),
+						// Extraction du template associé au component
+						tmplElem = document.getElementById('tq-grid-tmpl'),
+						// Clone du contenu du template
+						content = document.importNode(tmplElem.content, true);
+
+					shadow.appendChild(content);
+
+					for (let i = 0, length = grid.length; i < length; i++) {
+						var value = grid[i],
+							tqItem = document.createElement('tq-item');
+						tqItem.dataset.x = i % size + 1;
+						tqItem.dataset.y = (i - i % size) / size + 1;
+						tqItem.dataset.value = value;
+
+						tqItem.style['min-width'] = (10 * Math.floor(10 / size)) + '%';
+
+						tqItem.onclick = this.onClick.bind(this);
+
+						shadow.appendChild(tqItem);
+					}
+				}
+
+				onClick (event) {
+					var target = event.target,
+						x = +target.dataset.x,
+						y = +target.dataset.y;
+
+					if (target instanceof TaquinItem && this.isMovable(x, y)) {
+						var emptyItem = this.getEmptyItem();
+
+						emptyItem.dataset.value = target.dataset.value;
+						target.dataset.value = 0;
+					}
+				}
+
+				getEmptyItem () {
+					return this.shadowRoot.querySelector('tq-item[data-value="0"]');
+				}
+
+				getEmptyPosition () {
+					var emptyItem = this.getEmptyItem();
+
+					return {
+						x: +emptyItem.dataset.x,
+						y: +emptyItem.dataset.y
+					};
+				}
+
+				isMovable (x, y) {
+					var response = false,
+						{x: x0, y: y0} = this.getEmptyPosition();
+
+					if (x === x0) {
+						response = this.isAdjacent(y, y0);
+					} else if (y === y0) {
+						response = this.isAdjacent(x, x0);
+					}
+
+					return response;
+				}
+
+				isAdjacent (a, b) {
+					return Math.abs(a - b) === 1;
+				}
+			};
+
+			customElements.define('tq-grid', TaquinGrid);
+		</script>
+
+		<!--
+		Template associé au web component tq-item
+		-->
+		<template id="tq-item-tmpl">
+			<style>
+				:host {
+					flex: 1;
+					border-width: 1px;
+					border-style: solid;
+				}
+
+				p {
+					text-align: center;
+				}
+			</style>
+			<p></p>
+		</template>
+
+		<!--
+		Définition de l'élément item du taquin.
+		-->
+		<script>
+			class TaquinItem extends HTMLElement {
+				static get observedAttributes () {
+					return [
+						'data-value'
+					];
+				}
+
+				constructor () {
+					super();
+
+					var shadow = this.attachShadow({
+							mode: 'open'
+						}),
+						// Extraction du template associé au component
+						tmplElem = document.getElementById('tq-item-tmpl'),
+						// Clone du contenu du template
+						content = document.importNode(tmplElem.content, true),
+						// Extraction de la valeur à afficher
+						value = this.getAttribute('data-value'),
+						// Déclaration du noeud de texte
+						pNode;
+
+					shadow.appendChild(content);
+
+					pNode = this.shadowRoot.querySelector('p');
+					pNode.innerHTML = value !== '0' ? value : '';
+				}
+
+				attributeChangedCallback(attr, oldValue, newValue) {
+					if (attr === 'data-value') {
+						var pNode = this.shadowRoot.querySelector('p');
+
+						pNode.innerHTML = newValue !== '0' ? newValue : '';
+					}
+				}
+			};
+
+			customElements.define('tq-item', TaquinItem);
+		</script>
+	</body>
+</html>

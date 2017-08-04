@@ -24,11 +24,13 @@
 		-->
 		<template id="tq-grid-tmpl">
 			<style>
-				:host {
+				div {
 					display: flex;
 					flex-wrap: wrap;
 				}
 			</style>
+
+			<div></div>
 		</template>
 
 		<!--
@@ -53,6 +55,9 @@
 
 					shadow.appendChild(content);
 
+					// Le wrapper est utilisé pour avoir un binding (optimisation)
+					var wrapperElem = shadow.querySelector('div');
+
 					for (let i = 0, length = grid.length; i < length; i++) {
 						var value = grid[i],
 							tqItem = document.createElement('tq-item');
@@ -62,10 +67,10 @@
 
 						tqItem.style['min-width'] = (10 * Math.floor(10 / size)) + '%';
 
-						tqItem.onclick = this.onClick.bind(this);
-
-						shadow.appendChild(tqItem);
+						wrapperElem.appendChild(tqItem);
 					}
+
+					wrapperElem.onclick = this.onClick.bind(this);
 				}
 
 				onClick (event) {
